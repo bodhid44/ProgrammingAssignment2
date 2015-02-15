@@ -1,8 +1,15 @@
-## R Programming Course on coursera
-## Programming Assignment 2: Lexical Scoping
-##
-##	>>>  Extra comments added for peer assesment  <<<
+### R Programming Course on coursera
+### Programming Assignment 2: Lexical Scoping
+###
+###	>>>  Extra comments added for peer assesment  <<<
+###
+### Three functions available:
+### makeCacheMatrix - part of the assignment
+### cacheSolve - part of the assignment
+### example_cachematrix - example of usage that also includes timings
+### to indicate that the second call to cacheSolve returns a cached version
 
+## makeCacheMatrix
 ## Creates a special "matrix" that caches the inverse of the matrix
 ## (actually a list containing set/get functions for the matrix and inverse)
 ##
@@ -26,42 +33,42 @@
 ##		list containing the set, get, setinverse and getinverse functions
 ##
 makeCacheMatrix <- function(x = matrix()) {
-	#if supplied parameter is not a matrix, use empty matrix
-	#[assignment states that we should assume that the supplied matrix is 
-	#invertible, so no further checking]
-	if (class(x)!="matrix"){
-		x = matrix()
-	} 
-	invcache <- NULL
-
-	# sets the base matrix, and resets the inverse cache to NULL
-	set <- function(y){
-		#set the base matrix
-		x <<- y	
-		#reset the inverse cache
-		invcache <<- NULL
+  #if supplied parameter is not a matrix, use empty matrix
+  #[assignment states that we should assume that the supplied matrix is 
+  #invertible, so no further checking]
+  if (class(x)!="matrix"){
+    x = matrix()
+  } 
+  invcache <- NULL
+  
+  # sets the base matrix, and resets the inverse cache to NULL
+  set <- function(y){
+    #set the base matrix
+    x <<- y	
+    #reset the inverse cache
+    invcache <<- NULL
 	}
-
-	# returns the base matrix
-	get <- function() x 
+  
+  # returns the base matrix
+  get <- function() x 
 	
-	# sets the inverse cache (which is calculated elsewhere)
-	setinverse <- function(invmatrix) invcache <<- invmatrix
+  # sets the inverse cache (which is calculated elsewhere)
+  setinverse <- function(invmatrix) invcache <<- invmatrix
 
-	# returns the inverse cache
-	getinverse <- function() invcache
-
-	#the returned list containing the functions
-	list(set = set, get = get, setinverse = setinverse, getinverse = getinverse)
+  # returns the inverse cache
+  getinverse <- function() invcache
+  
+  #the returned list containing the functions
+  list(set = set, get = get, setinverse = setinverse, getinverse = getinverse)
 }
 
-
+## cacheSolve
 ## returns the inverse of a matrix
 ##
 ##	x	the base matrix (actually a list of functions returned by makeCacheMatrix)
 cacheSolve <- function(x, ...) {
-	#check that the output from makeCacheMatrix was supplied
-	#(simply assume that if x$getinverse exists we have the correct list object)
+  #check that the output from makeCacheMatrix was supplied
+  #(simply assume that if x$getinverse exists we have the correct list object)
 	if (class(x) == "matrix"){
 		message(cat("Please supply the output from makeCacheMatrix",
 			"rather than a matrix"))
@@ -90,7 +97,8 @@ cacheSolve <- function(x, ...) {
 	return(imatrix)
 }
 
-#function to illustrate the usage of the above functions
+## example_cachematrix
+## function to illustrate the usage of the above functions
 example_cachematrix <- function(size = 1000){
   original_matrix <- matrix(rnorm(size^2), nrow=size, ncol=size)
   message(cat("Inverting a",size,"x",size,"matrix."))
@@ -103,12 +111,15 @@ example_cachematrix <- function(size = 1000){
   cached_matrix <- makeCacheMatrix(original_matrix)
   message("Initial call to solve on the cached matrix via cacheSolve")
   message("['elapsed' should be approximately be doubled as not yet cached and computation is required]")
-  cacheSolve(cached_matrix)
+  cs1 <- cacheSolve(cached_matrix)
   print(proc.time() - stm)
   message("Second call to solve on the cached matrix via cacheSolve")
-  message("[As retrieving from cache, 'elapsed' should hardly increase]")
-  cacheSolve(cached_matrix)
+  message("[As retrieving from cache, 'elapsed' should hardly increase and 'getting cached data....' will be output]")
+  cs2 <- cacheSolve(cached_matrix)
   print(proc.time() - stm)
-  
-  
+  message("\nChecks that inverted matrices are identical")
+  message(cat("orignal matrix inverted identical to first call of cacheSolve:",
+              identical(original_matrix_inverse, cs1)))
+  message(cat("orignal matrix inverted identical to second call of cacheSolve:",
+              identical(original_matrix_inverse, cs2)))
 }
