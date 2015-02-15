@@ -58,7 +58,7 @@ makeCacheMatrix <- function(x = matrix()) {
 
 ## returns the inverse of a matrix
 ##
-##	x	the base matrix (actually a list returned by makeCacheMatrix)
+##	x	the base matrix (actually a list of functions returned by makeCacheMatrix)
 cacheSolve <- function(x, ...) {
 	#check that the output from makeCacheMatrix was supplied
 	#(simply assume that if x$getinverse exists we have the correct list object)
@@ -75,16 +75,40 @@ cacheSolve <- function(x, ...) {
 	#get the cached inverse (will be null if not yet cached)
 	imatrix <- x$getinverse()
 	if(!is.null(imatrix)) {
-		#cached, show message and return the cached value
-    	message("getting cached data ..... ")
-        return(imatrix)
-    }
-	#get the matrix
-    data <- x$get()
-	#invert using solve
-    imatrix <- solve(data, ...)
-	#cache the result
-    x$setinverse(imatrix)
-    #return the inverted matrix
-	imatrix
+    #already cached, so show message and return the cached value
+  	message("getting cached data ..... ")
+    return(imatrix)
+  }
+  #get the matrix
+  data <- x$get()
+  #invert using solve
+  imatrix <- solve(data, ...)
+  #cache the result
+  x$setinverse(imatrix)
+  #return the inverted matrix [could just use imatrix, 
+  #but used return to be more explicit - all exits from the function indicated by return]
+	return(imatrix)
+}
+
+#function to illustrate the usage of the above functions
+example_cachematrix <- function(size = 1000){
+  original_matrix <- matrix(rnorm(size^2), nrow=size, ncol=size)
+  message(cat("Inverting a",size,"x",size,"matrix."))
+  message("['elapsed' should indicate the approximate time required]")
+  #start stopwatch, then solve
+  stm <- proc.time()
+  original_matrix_inverse <- solve(original_matrix)
+  print(proc.time() - stm)
+  message("\nNow running makeCacheMatrix on the matrix.")
+  cached_matrix <- makeCacheMatrix(original_matrix)
+  message("Initial call to solve on the cached matrix via cacheSolve")
+  message("['elapsed' should be approximately be doubled as not yet cached and computation is required]")
+  cacheSolve(cached_matrix)
+  print(proc.time() - stm)
+  message("Second call to solve on the cached matrix via cacheSolve")
+  message("[As retrieving from cache, 'elapsed' should hardly increase]")
+  cacheSolve(cached_matrix)
+  print(proc.time() - stm)
+  
+  
 }
