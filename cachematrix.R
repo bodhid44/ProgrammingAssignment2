@@ -47,7 +47,7 @@ makeCacheMatrix <- function(x = matrix()) {
     x <<- y	
     #reset the inverse cache
     invcache <<- NULL
-	}
+  }
   
   # returns the base matrix
   get <- function() x 
