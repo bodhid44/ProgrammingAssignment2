@@ -69,21 +69,20 @@ makeCacheMatrix <- function(x = matrix()) {
 cacheSolve <- function(x, ...) {
   #check that the output from makeCacheMatrix was supplied
   #(simply assume that if x$getinverse exists we have the correct list object)
-	if (class(x) == "matrix"){
-		message(cat("Please supply the output from makeCacheMatrix",
-			"rather than a matrix"))
-		return(NULL)
-	}
-	else if (class(x) != "list" || is.null(x$getinverse)){
-		message("Please supply the output from makeCacheMatrix")
-		return(NULL)
-	}
-
-	#get the cached inverse (will be null if not yet cached)
-	imatrix <- x$getinverse()
-	if(!is.null(imatrix)) {
+  if (class(x) == "matrix"){
+    message("Please supply the output from makeCacheMatrix rather than a matrix")
+    return(NULL)
+  }
+  else if (class(x) != "list" || is.null(x$getinverse)){
+    message("Please supply the output from makeCacheMatrix")
+    return(NULL)
+  }
+  
+  #get the cached inverse (will be null if not yet cached)
+  imatrix <- x$getinverse()
+  if(!is.null(imatrix)) {
     #already cached, so show message and return the cached value
-  	message("getting cached data ..... ")
+    message("getting cached data ..... ")
     return(imatrix)
   }
   #get the matrix
@@ -94,7 +93,7 @@ cacheSolve <- function(x, ...) {
   x$setinverse(imatrix)
   #return the inverted matrix [could just use imatrix, 
   #but used return to be more explicit - all exits from the function indicated by return]
-	return(imatrix)
+  return(imatrix)
 }
 
 ## example_cachematrix
@@ -118,8 +117,8 @@ example_cachematrix <- function(size = 1000){
   cs2 <- cacheSolve(cached_matrix)
   print(proc.time() - stm)
   message("\nChecks that inverted matrices are identical")
-  message(cat("orignal matrix inverted identical to first call of cacheSolve:",
-              identical(original_matrix_inverse, cs1)))
-  message(cat("orignal matrix inverted identical to second call of cacheSolve:",
-              identical(original_matrix_inverse, cs2)))
+  oi_ident_cs1 <- identical(original_matrix_inverse, cs1)
+  oi_ident_cs2 <- identical(original_matrix_inverse, cs2)
+  message(cat("orignal matrix inverted identical to first call of cacheSolve:", oi_ident_cs1))
+  message(cat("orignal matrix inverted identical to second call of cacheSolve:", oi_ident_cs2))
 }
